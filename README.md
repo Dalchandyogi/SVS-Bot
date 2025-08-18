@@ -40,9 +40,9 @@ WHATSAPP_ACCESS_TOKEN=your_access_token
 WHATSAPP_PHONE_ID=your_phone_id
 API_VERSION=v23.0
 
-URL_FOR_QUESTIONS=https://whatsapp.solvebee.in/getQuestions.php
-URL_FOR_SUB_QUESTIONS=https://whatsapp.solvebee.in/getSubQuestions.php
-URL_FOR_ANSWER=https://whatsapp.solvebee.in/getAnswer.php
+URL_FOR_QUESTIONS=your_api_url
+URL_FOR_SUB_QUESTIONS=your_api_url_2
+URL_FOR_ANSWER=your_api_url_3
 ```
 
 ---
