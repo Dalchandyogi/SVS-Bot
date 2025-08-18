@@ -1,8 +1,13 @@
 import httpx
+import os
+from dotenv import load_dotenv
 
-URL_FOR_QUESTIONS = "https://whatsapp.solvebee.in/getQuestions.php"
-URL_FOR_SUB_QUESTIONS = "https://whatsapp.solvebee.in/getSubQuestions.php"
-URL_FOR_ANSWER = "https://whatsapp.solvebee.in/getAnswer.php"
+load_dotenv()
+
+# API URLs
+URL_FOR_QUESTIONS = os.getenv("URL_FOR_QUESTIONS")
+URL_FOR_SUB_QUESTIONS = os.getenv("URL_FOR_SUB_QUESTIONS")
+URL_FOR_ANSWER = os.getenv("URL_FOR_ANSWER")
 
 user_sub_questions = {}
 

@@ -14,6 +14,8 @@ from whatsapp_utils import (
 
 app = FastAPI()
 
+load_dotenv()
+
 TEST_NO = os.getenv("TEST_NO")
 
 
