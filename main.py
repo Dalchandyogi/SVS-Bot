@@ -19,7 +19,7 @@ load_dotenv()
 
 TEST_NO = os.getenv("TEST_NO")
 
-USE_FAQ_SEARCH = False
+USE_FAQ_SEARCH = True
 
 
 @app.get("/")
