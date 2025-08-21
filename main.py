@@ -19,9 +19,6 @@ load_dotenv()
 
 TEST_NO = os.getenv("TEST_NO")
 
-# === BOT BEHAVIOR SWITCH ===
-# Set to True to enable FAQ search functionality.
-# Set to False to use the original interactive menu flow.
 USE_FAQ_SEARCH = False
 
 
