@@ -11,12 +11,18 @@ from whatsapp_utils import (
     send_message,
     send_yes_no_buttons,
 )
+from script.search_faq import search_faq
 
 app = FastAPI()
 
 load_dotenv()
 
 TEST_NO = os.getenv("TEST_NO")
+
+# === BOT BEHAVIOR SWITCH ===
+# Set to True to enable FAQ search functionality.
+# Set to False to use the original interactive menu flow.
+USE_FAQ_SEARCH = False
 
 
 @app.get("/")
@@ -30,8 +36,6 @@ async def index():
 @app.get("/webhook")
 async def verify(request: Request):
     params = dict(request.query_params)
-
-    # print("Params:", params)
 
     mode = params.get("hub.mode")
     token = params.get("hub.verify_token")
@@ -49,79 +53,71 @@ async def receive_message(request: Request):
 
     try:
         entry = body["entry"][0]["changes"][0]["value"]
-        statuses = entry.get("statuses", [None])[0]
         messages = entry.get("messages", [None])[0]
-
-        if statuses:
-            print(f"""
-            ===== **** MESSAGE STATUS **** ======
-            STATUS  => {statuses.get("status")}
-            """)
 
         if messages:
             user_number = messages["from"]
             msg_type = messages["type"]
             message_id = messages["id"]
-
-            # print(f"MOBILE NUMBER : {user_number}")
-
-            # print(f"Message id : {message_id}")
+            
             await mark_as_read_send_indicator(message_id)
 
             # Handle Text Input
             if msg_type == "text":
                 user_text = messages["text"]["body"].strip().lower()
 
-                # Greeting
-                if user_text in ["hi", "hello", "hii"]:
-                    await send_message(user_number,
-                                       "Welcome! How can I help you today?")
-                    await send_list(user_number)
+                # === CONDITIONAL LOGIC BASED ON USE_FAQ_SEARCH ===
+                if USE_FAQ_SEARCH:
+                    # Search for an answer in the FAQ database
+                    faq_answer = await search_faq(user_text)
+                    await send_message(user_number, faq_answer)
 
-                # User replies with a number (after receiving follow-up question list)
-                elif user_text.isdigit():
-                    index = int(user_text)
-                    sub_map = user_sub_questions.get(user_number, {})
-                    sub_question_id = sub_map.get(index)
+                else:
+                    # Use the original interactive menu flow
+                    if user_text in ["hi", "hello", "hii"]:
+                        await send_message(user_number,
+                                           "Welcome! How can I help you today?")
+                        await send_list(user_number)
 
-                    if sub_question_id:
-                        answer = await fetch_answer(str(sub_question_id))
-                        await send_message(user_number, answer)
-                        await send_yes_no_buttons(user_number)
+                    elif user_text.isdigit():
+                        index = int(user_text)
+                        sub_map = user_sub_questions.get(user_number, {})
+                        sub_question_id = sub_map.get(index)
+
+                        if sub_question_id:
+                            answer = await fetch_answer(str(sub_question_id))
+                            await send_message(user_number, answer)
+                            await send_yes_no_buttons(user_number)
+                        else:
+                            await send_message(
+                                user_number,
+                                "Please select a valid option from the previous Questions list."
+                            )
+
                     else:
                         await send_message(
                             user_number,
-                            "Please select a valid option from the previous Questions list."
+                            "Sorry, I didn't understand that. Please type 'hi' or 'hello' to start."
                         )
 
-                else:
-                    await send_message(
-                        user_number,
-                        "Sorry, I didn't understand that. Please type 'hi' or 'hello' to start."
-                    )
-
-            # Handle list reply (user selects a main category)
+            # Handle list and button replies for the original flow
             elif msg_type == "interactive":
                 interactive_obj = messages["interactive"]
-
+                
                 if interactive_obj["type"] == "list_reply":
                     selected_id = interactive_obj["list_reply"]["id"]
                     print(f"Selected ID ====>> : {selected_id}")
 
-                    # Fetch and send follow-up questions
-                    msg = await fetch_followup_questions(
-                        selected_id, user_number)
+                    msg = await fetch_followup_questions(selected_id, user_number)
                     await send_message(user_number, msg)
 
                 elif interactive_obj["type"] == "button_reply":
                     button_id = interactive_obj["button_reply"]["id"]
                     if button_id == "yes":
-                        await send_message(user_number,
-                                           "Great! Let's proceed.")
+                        await send_message(user_number, "Great! Let's proceed.")
                         await send_list(user_number)
                     else:
-                        await send_message(user_number,
-                                           "Thank you for your time!")
+                        await send_message(user_number, "Thank you for your time!")
 
     except Exception as e:
         import traceback
