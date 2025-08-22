@@ -71,7 +71,7 @@ async def receive_message(request: Request):
                 # === CONDITIONAL LOGIC BASED ON USE_FAQ_SEARCH ===
                 if USE_FAQ_SEARCH:
                     # Search for an answer in the FAQ database
-                    faq_answer = await ask_faq(user_text, faq_text)
+                    faq_answer = ask_faq(user_text, faq_text)
                     await send_message(user_number, faq_answer)
 
                 else:
