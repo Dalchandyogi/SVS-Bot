@@ -61,8 +61,8 @@ async def search_faq(user_query: str) -> str:
         best_score, best_match = scores[0]
 
         # Define a similarity threshold to avoid returning irrelevant answers
-        # A threshold of 0.75 is a good starting point. You can adjust this.
-        if best_score > 0.75:
+        # A threshold of 0.80 is a good starting point. You can adjust this.
+        if best_score > 0.80:
             return best_match['answer']
         else:
             return "I'm sorry, I couldn't find an answer to your question. Please rephrase or try a different question."
