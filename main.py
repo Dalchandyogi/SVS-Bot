@@ -12,7 +12,7 @@ from whatsapp_utils import (
     send_yes_no_buttons,
 )
 from script.search_faq import search_faq
-from script.ask_gemini_faq import ask_faq
+from script.ask_gemini_faq import ask_faq, load_faq_docx
 
 app = FastAPI()
 
@@ -21,6 +21,10 @@ load_dotenv()
 TEST_NO = os.getenv("TEST_NO")
 
 USE_FAQ_SEARCH = True
+
+# Path to your FAQ doc
+faq_path = "data/FAQ of SVS.docx"
+faq_text = load_faq_docx(faq_path)
 
 
 @app.get("/")
@@ -67,7 +71,7 @@ async def receive_message(request: Request):
                 # === CONDITIONAL LOGIC BASED ON USE_FAQ_SEARCH ===
                 if USE_FAQ_SEARCH:
                     # Search for an answer in the FAQ database
-                    faq_answer = await ask_faq(user_text, user_text)
+                    faq_answer = await ask_faq(user_text, faq_text)
                     await send_message(user_number, faq_answer)
 
                 else:
