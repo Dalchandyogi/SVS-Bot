@@ -12,6 +12,7 @@ from whatsapp_utils import (
     send_yes_no_buttons,
 )
 from script.search_faq import search_faq
+from script.ask_gemini_faq import ask_faq
 
 app = FastAPI()
 
@@ -66,7 +67,7 @@ async def receive_message(request: Request):
                 # === CONDITIONAL LOGIC BASED ON USE_FAQ_SEARCH ===
                 if USE_FAQ_SEARCH:
                     # Search for an answer in the FAQ database
-                    faq_answer = await search_faq(user_text)
+                    faq_answer = await ask_faq(user_text, user_text)
                     await send_message(user_number, faq_answer)
 
                 else:
