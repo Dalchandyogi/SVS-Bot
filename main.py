@@ -53,6 +53,18 @@ async def verify(request: Request):
 async def receive_message(request: Request):
     body = await request.json()
 
+    if "entry" in body:
+        for entry in body["entry"]:
+            for change in entry.get("changes", []):
+                value = change.get("value", {})
+                if "statuses" in value:
+                    for status in value["statuses"]:
+                        message_id = status["id"]
+                        recipient = status["recipient_id"]
+                        status_value = status["status"]
+                        print(f"Message {message_id} to {recipient} is now {status_value}")
+
+
     try:
         entry = body["entry"][0]["changes"][0]["value"]
         messages = entry.get("messages", [None])[0]

@@ -109,3 +109,73 @@ async def send_yes_no_buttons(to: str):
         }
     }
     await post_to_whatsapp(payload)
+
+# ---------------- Send a Template Message ---------------------
+import json
+from typing import Optional, List, Dict, Any
+
+async def send_template(
+    to_number: str,
+    template_name: str,
+    language: str = "en",
+    components: Optional[List[Dict[str, Any]]] = None
+):
+    
+    # payload = {
+    #     "messaging_product": "whatsapp",
+    #     "to": to_number,
+    #     "type": "template",
+    #     "template": {
+    #         "name": template_name,
+    #         "language": {"code": language}
+    #     }
+    # }
+
+    # # Validate components
+    # if components:
+    #     if not isinstance(components, list):
+    #         raise ValueError("`components` must be a list of dicts")
+
+    #     for comp in components:
+    #         if "type" not in comp:
+    #             raise ValueError(f"Invalid component: {comp}. Missing 'type'")
+    #         if comp["type"] == "body" and "parameters" not in comp:
+    #             raise ValueError(f"Body component must include 'parameters': {comp}")
+
+    #     payload["template"]["components"] = components
+
+    payload = {
+        "messaging_product": "whatsapp",
+        "to": "916378533897",
+        "type": "template",
+        "template": {
+            "name": "otp",
+            "language": {
+                "code": "en_US"
+            },
+            "components": [
+                {
+                    "type": "body",
+                    "parameters": [
+                        {
+                            "type": "text",
+                            "text": "123456"
+                        }
+                    ]
+                },
+                {
+                    "type": "button",
+                    "sub_type": "url",
+                    "index": "0",
+                    "parameters": [
+                        {
+                            "type": "text",
+                            "text": "123456"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+
+    return await post_to_whatsapp(payload)
